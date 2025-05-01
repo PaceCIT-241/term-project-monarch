@@ -1,0 +1,31 @@
+CREATE DATABASE GameDataSet;
+
+USE GameDataSet;
+
+CREATE TABLE Genre (
+    Genre_ID INT PRIMARY KEY AUTO_INCREMENT,
+    GenreName VARCHAR(50) NOT NULL
+);
+
+CREATE TABLE Platform (
+    Platform_ID INT PRIMARY KEY AUTO_INCREMENT,
+    Platform_Name VARCHAR(50) NOT NULL
+);
+
+CREATE TABLE Game (
+    Game_ID VARCHAR(10) PRIMARY KEY,
+    Game_Name VARCHAR(100) NOT NULL,
+    Release_Year YEAR,
+    Global_Sales DECIMAL(10,2),
+    User_Rating DECIMAL(3,2),
+    Active_Players INT,
+    Genre_ID INT,
+    Platform_ID INT,    
+    
+    FOREIGN KEY (Genre_ID) REFERENCES Genre(Genre_ID),
+    FOREIGN KEY (Platform_ID) REFERENCES Platform(Platform_ID)
+);
+
+
+
+
