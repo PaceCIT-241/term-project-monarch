@@ -1,3 +1,5 @@
+# create database 
+
 CREATE DATABASE GameDataSet;
 
 USE GameDataSet;
@@ -5,11 +7,10 @@ USE GameDataSet;
 CREATE TABLE Genre (
     Genre_ID INT PRIMARY KEY AUTO_INCREMENT,
     GenreName VARCHAR(50) NOT NULL
-);
 
 CREATE TABLE Platform (
     Platform_ID INT PRIMARY KEY AUTO_INCREMENT,
-    Platform_Name VARCHAR(50) NOT NULL
+    Platform_Name VARCHAR(50) UNIQUE
 );
 
 CREATE TABLE Game (
@@ -26,6 +27,38 @@ CREATE TABLE Game (
     FOREIGN KEY (Platform_ID) REFERENCES Platform(Platform_ID)
 );
 
+# create staging table to then populate the database
 
+CREATE TABLE Game_Staging (
+    Game_ID VARCHAR(10),
+    Game_Name VARCHAR(100),
+    Genre VARCHAR(50),
+    Platform VARCHAR(50),
+    Release_Year YEAR,
+    Global_Sales DECIMAL(10,2),
+    User_Rating DECIMAL(3,2),
+    Active_Players INT
+);
 
+# populate tables with data from staging table
 
+# populates platform table
+INSERT IGNORE INTO Platform (Platform_Name) SELECT DISTINCT Platform FROM Game_Staging ORDER BY Platform;
+
+# populates genre table
+INSERT IGNORE INTO Genre (GenreName) SELECT DISTINCT Genre FROM Game_Staging ORDER BY Genre ASC;
+
+# populates game table
+INSERT IGNORE INTO Game (Game_ID, Game_Name, Release_Year, Global_Sales, User_Rating, Active_Players, Genre_ID, Platform_ID)
+SELECT 
+    g.Game_ID,
+    g.Game_Name,
+    g.Release_Year,
+    g.Global_Sales,
+    g.User_Rating,
+    g.Active_Players,
+    ge.Genre_ID,
+    p.Platform_ID
+FROM Game_Staging g
+JOIN Genre ge ON g.Genre = ge.GenreName
+JOIN Platform p ON g.Platform = p.Platform_Name;
