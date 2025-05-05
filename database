@@ -62,3 +62,56 @@ SELECT
 FROM Game_Staging g
 JOIN Genre ge ON g.Genre = ge.GenreName
 JOIN Platform p ON g.Platform = p.Platform_Name;
+
+# queries
+
+# top 100 rows 
+
+SELECT * FROM Game LIMIT 100;
+SELECT * FROM Genre LIMIT 100;
+SELECT * FROM Platform LIMIT 100;
+
+# join statement
+SELECT 
+    g.Game_ID, 
+    g.Game_Name, 
+    gn.GenreName, 
+    p.Platform_Name
+FROM Game g
+JOIN Genre gn ON g.Genre_ID = gn.Genre_ID
+JOIN Platform p ON g.Platform_ID = p.Platform_ID
+ORDER BY g.Game_ID
+LIMIT 100;
+
+# aggregate functions
+SELECT gn.GenreName, SUM(g.Global_Sales) AS Total_Global_Sales
+FROM Game g
+JOIN Genre gn ON g.Genre_ID = gn.Genre_ID
+GROUP BY gn.GenreName;
+
+# view: top rated games
+CREATE VIEW TopRatedGames AS
+SELECT 
+    g.Game_ID,
+    g.Game_Name,
+    gn.GenreName,
+    p.Platform_Name,
+    g.User_Rating
+FROM Game g
+JOIN Genre gn ON g.Genre_ID = gn.Genre_ID
+JOIN Platform p ON g.Platform_ID = p.Platform_ID
+WHERE g.User_Rating >= 8
+ORDER BY g.User_Rating DESC;
+
+SELECT * FROM TopRatedGames LIMIT 100;
+
+# security
+CREATE ROLE gamer;
+GRANT SELECT ON gamedataset.* TO gamer;
+CREATE USER 'ilikegames'@'localhost' IDENTIFIED BY 'ilikegames590';
+CREATE USER 'idontknow'@'localhost' IDENTIFIED BY 'idontknow_90';
+CREATE USER 'ilovewarzone'@'localhost' IDENTIFIED BY '_ilovewarzone762';
+GRANT gamer TO 'ilikegames'@'localhost';
+GRANT gamer TO 'idontknow'@'localhost';
+GRANT gamer TO 'ilovewarzone'@'localhost';
+
